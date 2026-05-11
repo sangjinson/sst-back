@@ -43,10 +43,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 // 고객지원 조회 허용
                 .requestMatchers(
-                    "/api/customersupport/notice",
-                    "/api/customersupport/faq"
+            		"/api/customersupport/notice",
+			        "/api/customersupport/faq",
+			        "/api/comments/**"
                 ).permitAll()
-                // ✅ 볼거리 API 허용
+                // 볼거리 API 허용
                 .requestMatchers("/api/see/**").permitAll()
                 // 홈/메인페이지 카드 조회 API 허용
                 .requestMatchers("/api/home/**").permitAll()
