@@ -38,5 +38,7 @@ public interface MemberMapper {
     // 관리자: 전체 회원 목록 조회
     List<Member> findAllMembers();
     
+    // 회원 탈퇴 (논리 삭제 및 마스킹)
+    int withdrawMember(@Param("mbrId") Long mbrId);
     
 }

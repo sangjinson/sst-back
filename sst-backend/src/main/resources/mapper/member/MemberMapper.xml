@@ -4,6 +4,21 @@
 
 <mapper namespace="sst.member.mapper.MemberMapper">
 
+
+	<update id="withdrawMember">
+        /* 회원 탈퇴 (소프트 삭제 및 마스킹) */
+        UPDATE MEMBER
+        SET MBR_USE_YN = 'N',
+            /* 🚀 탈퇴자 이메일 재가입 불가 및 UQ 충돌 방지 마스킹 */
+            MBR_EMAIL = CONCAT('del_', MBR_ID, '_', UNIX_TIMESTAMP(), '@deleted.local'),
+            /* 🚀 닉네임 UQ 충돌 방지 마스킹 */
+            MBR_NICKNAME = CONCAT('del_', MBR_ID, '_', UNIX_TIMESTAMP()),
+            /* 🚀 리프레시 토큰 무효화 */
+            MBR_REFRESH_TOKEN = NULL
+        WHERE MBR_ID = #{mbrId}
+    </update>
+    
+    
 	<select id="findAllMembers" resultMap="memberResultMap">
         /* 관리자: 전체 회원 목록 조회 */
         SELECT 
