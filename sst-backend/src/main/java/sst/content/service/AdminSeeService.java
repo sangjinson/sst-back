@@ -1,10 +1,13 @@
 package sst.content.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import sst.content.dto.SeeResponseDto;
+import sst.content.dto.SeeUpdateRequestDto;
 import sst.content.mapper.PlaceSeeMapper;
 import sst.global.dto.PageRequest;
 import sst.global.dto.PageResponse;
@@ -25,7 +28,30 @@ public class AdminSeeService {
 
     @Transactional(readOnly = true)
     public SeeResponseDto getDetail(Long plcNo) {
-        return placeSeeMapper.findById(plcNo);
+        SeeResponseDto dto = placeSeeMapper.findById(plcNo);
+        // 🚀 상세 조회 시 태그 목록을 별도 쿼리로 가져와서 맵핑
+        if (dto != null) {
+            dto.setTagCodes(placeSeeMapper.findTagCodesByPlcNo(plcNo));
+        }
+        return dto;
+    }
+
+    @Transactional
+    public void updateSeeDetail(Long plcNo, SeeUpdateRequestDto dto) {
+        placeSeeMapper.updatePlace(plcNo, dto);
+        placeSeeMapper.updatePlaceSee(plcNo, dto);
+
+        // 🚀 태그 처리: 기존 매핑을 모두 물리 삭제 후, 새로 전달받은 태그들만 인서트[cite: 1]
+        placeSeeMapper.deleteTagsByPlcNo(plcNo);
+        if (dto.getTagCodes() != null && !dto.getTagCodes().isEmpty()) {
+            placeSeeMapper.insertTags(plcNo, dto.getTagCodes());
+        }
+    }
+
+    // 🚀 장소 삭제 로직 추가
+    @Transactional
+    public void deleteSee(Long plcNo) {
+        placeSeeMapper.updatePlaceUseYn(plcNo, "N");
     }
     
     

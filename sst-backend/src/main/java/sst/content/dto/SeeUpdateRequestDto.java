@@ -1,5 +1,7 @@
 package sst.content.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -13,4 +15,14 @@ public class SeeUpdateRequestDto {
     private String seeParking;
     private String seeRestdate;
     private String seeUsetime;
+    
+    private String plcDaddr;     // 상세주소
+    private String plcTelno;     // 전화번호
+    private String plcHomepage;  // 홈페이지 주소
+    private String plcOverview;  // 장소 소개/개요
+    private String plcFltCd;     // 장소 필터 코드
+    private String plcLat;       // 위도 (DB Decimal 타입과 호환)
+    private String plcLot;       // 경도 (DB Decimal 타입과 호환)
+    
+    private List<String> tagCodes;
 }

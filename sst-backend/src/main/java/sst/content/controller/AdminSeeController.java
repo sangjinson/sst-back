@@ -1,6 +1,7 @@
 package sst.content.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -46,8 +47,14 @@ public class AdminSeeController {
             @PathVariable(name = "plcNo") Long plcNo,
             @RequestBody SeeUpdateRequestDto requestDto) {
         
-        // 🚀 프론트엔드 공통 규격인 ApiResponse 포맷으로 통일하여 응답
-        seeService.updateSee(plcNo, requestDto);
+        // 🚀 버그 수정: 주입받은 adminSeeService를 정상적으로 호출하도록 변경
+        adminSeeService.updateSeeDetail(plcNo, requestDto);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+    
+    @DeleteMapping("/{plcNo}")
+    public ResponseEntity<ApiResponse<Void>> deleteDetail(@PathVariable(name = "plcNo") Long plcNo) {
+        adminSeeService.deleteSee(plcNo);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
     
