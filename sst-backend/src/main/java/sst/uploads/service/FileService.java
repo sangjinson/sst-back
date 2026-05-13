@@ -18,7 +18,11 @@ public class FileService {
 
     private final FileMapper fileMapper;
     private final FileProvider fileProvider; // 인터페이스 주입
-
+    
+    /*
+     * 파일을 업로드 하고 DB에 저장후 데이터를 반환합니다.
+     * 
+     */
     @Transactional
     public FileDomain saveFile(MultipartFile file, String domain, String subPath) {
         if (file == null || file.isEmpty()) return null;

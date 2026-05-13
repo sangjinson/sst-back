@@ -168,6 +168,24 @@
 	    </association>
     
     </resultMap>
+    
+    <!-- 회원 아이디로 조회 -->
+    <select id="findMemberById" resultMap="memberResultMap">
+        SELECT 
+	          M.*,
+	          F.FILE_ORG_NM, 
+	          F.FILE_SAVE_NM, 
+	          F.FILE_PATH, 
+	          F.FILE_EXT, 
+	          F.FILE_SIZE, 
+	          F.FILE_MIME_TYPE, 
+	          F.FILE_TYPE
+	    FROM MEMBER M
+	    LEFT JOIN FILE F ON M.MBR_PROFILE_FILE_NO = F.FILE_NO AND F.FILE_USE_YN = 'Y'
+	    WHERE M.MBR_ID = #{mbrId} 
+	      AND M.MBR_USE_YN = 'Y';
+    </select>
+    
 
     <select id="findMemberByEmail" resultMap="memberResultMap">
         <!--  회원정보 조회 

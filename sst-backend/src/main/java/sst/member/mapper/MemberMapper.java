@@ -13,6 +13,9 @@ public interface MemberMapper {
 	// 회원등록
 	int saveMember(Member member);
 	
+	
+	Optional<Member> findMemberById(@Param(value = "mbrId") Long mbrId);
+	
 	// 회원 정보 조회 (이메일)
 	Optional<Member> findMemberByEmail(@Param(value = "email") String email);
 	
