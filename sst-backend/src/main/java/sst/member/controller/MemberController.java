@@ -22,7 +22,7 @@ import sst.member.domain.Member;
 import sst.member.dto.MemberUpdateRequest;
 import sst.member.dto.PasswordChangeRequest;
 import sst.member.service.MemberService;
-import sst.uploads.service.FileService;
+
 /* 수정함 */
 @RestController
 @RequestMapping("/api/member")
