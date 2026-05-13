@@ -16,7 +16,21 @@ import sst.community.dto.RegionDto;
 public interface CommunityMapper {
 
 	// 커뮤니티 게시글 목록 조회
-    List<Community> selectCommunityList(@Param("catCd") String catCd);
+	List<Community> selectCommunityList(
+	        @Param("catCd") String catCd,
+	        @Param("searchType") String searchType,
+	        @Param("keyword") String keyword,
+	        @Param("sortType") String sortType,
+	        @Param("offset") int offset,
+	        @Param("size") int size
+	);
+	
+	// 커뮤니티 게시글 총 개수 조회
+	int countCommunityList(
+	        @Param("catCd") String catCd,
+	        @Param("searchType") String searchType,
+	        @Param("keyword") String keyword
+	);
 
     // 커뮤니티 게시글 상세 조회
     Community selectCommunityDetail(Long commNo);
