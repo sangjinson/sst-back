@@ -14,27 +14,23 @@ import sst.global.dto.PageResponse;
 @Service
 @RequiredArgsConstructor
 public class AdminCommentService {
-
+    
     private final CommentMapper commentMapper;
 
     @Transactional(readOnly = true)
+    // 🚀 반환 타입 변경
     public PageResponse<AdminCommentResponseDto> getCommentsPaged(String useYn, PageRequest pageRequest) {
-        int total = commentMapper.countAdminCommentList(pageRequest.getKeyword(), useYn);
-        List<AdminCommentResponseDto> list = commentMapper.findAdminCommentListPaged(
-                pageRequest.getOffset(), pageRequest.getSize(), pageRequest.getKeyword(), useYn);
+        int total = commentMapper.adminCountCommentList(pageRequest.getKeyword(), useYn, pageRequest.getSearchType());
+        
+        // 🚀 리스트 타입 변경
+        List<AdminCommentResponseDto> list = commentMapper.adminFindCommentListPaged(
+                pageRequest.getOffset(), pageRequest.getSize(), pageRequest.getKeyword(), useYn, pageRequest.getSearchType());
+        
         return new PageResponse<>(list, total, pageRequest);
     }
 
     @Transactional
-    public void toggleCommentStatus(Long cmntNo, String useYn) {
-        // 1. 상태 업데이트
-        commentMapper.updateCommentUseYn(cmntNo, useYn);
-        
-        // 🚀 2. 상태 변경 후 원문 게시글의 댓글 수 동기화
-        Long commNo = commentMapper.findCommNoByCmntNo(cmntNo);
-        if (commNo != null) {
-            // 원본 글의 댓글 수를 재계산 (Y인 것만)
-            commentMapper.syncCommentCount(commNo);
-        }
+    public void toggleCommentStatus(Long cmtNo, String useYn) {
+        commentMapper.adminUpdateCommentUseYn(cmtNo, useYn);
     }
 }

@@ -2,14 +2,7 @@ package sst.community.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import sst.community.domain.Community;
 import sst.community.service.AdminCommunityService;
@@ -24,36 +17,48 @@ public class AdminCommunityController {
 
     private final AdminCommunityService adminCommunityService;
 
- // 🚀 뽐낼거리 목록 조회 (catCd: CMM001-인생거리, CMM002-핫플레이스)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse<PageResponse<Community>>> getList(
-            @RequestParam(name = "catCd") String catCd,
-            @RequestParam(name = "useYn", required = false, defaultValue = "Y") String useYn,
-            PageRequest pageRequest) { 
-        
-        PageResponse<Community> result = adminCommunityService.getListPageByCategory(catCd, useYn, pageRequest);
+    public ResponseEntity<ApiResponse<PageResponse<Community>>> getAdminCommunityList(
+            @RequestParam("catCd") String catCd,
+            @RequestParam("useYn") String useYn,
+            PageRequest pageRequest) {
+        PageResponse<Community> result = adminCommunityService.getAdminCommunityListPaged(catCd, useYn, pageRequest);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    // 🚀 휴지통 이동 및 복구를 처리할 상태 변경 API
+    // 🚀 [추가] 관리자 글 수정을 위한 단건 조회
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{commNo}/status")
-    public ResponseEntity<ApiResponse<Void>> toggleStatus(
+    @GetMapping("/{commNo}")
+    public ResponseEntity<ApiResponse<Community>> getCommunityDetail(@PathVariable("commNo") Long commNo) {
+        Community result = adminCommunityService.getCommunityDetail(commNo);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')") // 🚀 관리자 권한(ROLE_ADMIN)이 있는 유저만 요청 가능
+    @PutMapping("/{commNo}")
+    public ResponseEntity<ApiResponse<Void>> updateCommunity(
             @PathVariable("commNo") Long commNo,
-            @RequestParam("useYn") String useYn) {
+            @RequestBody Community community) {
         
-        adminCommunityService.updateCommunityUseYn(commNo, useYn);
+        community.setCommNo(commNo); // 🚀 URL 경로의 번호를 객체에 세팅
+        adminCommunityService.modifyCommunityByAdmin(community);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    // 🚀 어드민 뽐낼거리 단건 삭제 (소프트 딜리트)
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{commNo}/status")
+    public ResponseEntity<ApiResponse<Void>> updateCommunityStatus(
+            @PathVariable("commNo") Long commNo,
+            @RequestParam("useYn") String useYn) {
+        adminCommunityService.updateCommunityStatus(commNo, useYn);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{commNo}")
     public ResponseEntity<ApiResponse<Void>> deleteCommunity(@PathVariable("commNo") Long commNo) {
         adminCommunityService.deleteCommunity(commNo);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
-    
-    
-    
 }

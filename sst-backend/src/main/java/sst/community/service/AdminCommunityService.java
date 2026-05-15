@@ -1,13 +1,17 @@
 package sst.community.service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import sst.community.domain.Community;
 import sst.community.mapper.CommunityMapper;
 import sst.global.dto.PageRequest;
 import sst.global.dto.PageResponse;
-import java.util.List;
+import sst.global.exception.CustomException;
+import sst.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -16,36 +20,40 @@ public class AdminCommunityService {
     private final CommunityMapper communityMapper;
 
     @Transactional(readOnly = true)
-    public PageResponse<Community> getListPage(String catCd, PageRequest pageRequest) {
-        int total = communityMapper.countAdminCommunityList(catCd, pageRequest.getKeyword());
+    public PageResponse<Community> getAdminCommunityListPaged(String catCd, String useYn, PageRequest pageRequest) {
+        int total = communityMapper.countAdminCommunityList(catCd, useYn, pageRequest.getKeyword());
         List<Community> list = communityMapper.selectAdminCommunityListPaged(
-                catCd, pageRequest.getOffset(), pageRequest.getSize(), pageRequest.getKeyword()
+                catCd, 
+                useYn, 
+                pageRequest.getKeyword(), 
+                pageRequest.getOffset(), 
+                pageRequest.getSize()
         );
         return new PageResponse<>(list, total, pageRequest);
+    }
+
+    // 🚀 [추가] 관리자: 커뮤니티 단건 상세 조회 (수정 폼 데이터 바인딩용)
+    @Transactional(readOnly = true)
+    public Community getCommunityDetail(Long commNo) {
+        return communityMapper.selectCommunityDetail(commNo);
+    }
+
+    @Transactional
+    public void modifyCommunityByAdmin(Community community) {
+        // 🚀 매퍼 호출 시 타입을 Community(Domain)로 정확히 전달합니다.
+        int result = communityMapper.updateCommunityByAdmin(community);
+        if (result == 0) {
+            throw new CustomException(ErrorCode.NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    public void updateCommunityStatus(Long commNo, String useYn) {
+        communityMapper.updateAdminCommunityStatus(commNo, useYn);
     }
 
     @Transactional
     public void deleteCommunity(Long commNo) {
-        // 🚀 소프트 삭제 처리 (DB에서 물리적 삭제가 아닌 COMM_USE_YN='N' 갱신)
         communityMapper.deleteCommunity(commNo);
-    }
-    
-    @Transactional(readOnly = true)
-    public PageResponse<Community> getListPageByCategory(String catCd, String useYn, PageRequest pageRequest) {
-        
-    	int total = communityMapper.countCommunityListByUseYn(catCd, pageRequest.getKeyword(), useYn);
-        
-        List<Community> list = communityMapper.findCommunityListPaged(
-                catCd, pageRequest.getOffset(), pageRequest.getSize(), pageRequest.getKeyword(), useYn
-        );
-        return new PageResponse<>(list, total, pageRequest);
-    }
-
-    @Transactional
-    public void updateCommunityUseYn(Long commNo, String useYn) {
-        int result = communityMapper.updateCommunityUseYn(commNo, useYn);
-        if (result == 0) {
-            throw new RuntimeException("해당 게시글을 찾을 수 없거나 상태 변경에 실패했습니다."); 
-        }
     }
 }

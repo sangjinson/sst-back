@@ -1,57 +1,73 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="sst.community.comment.mapper.CommentMapper">
 
-	<!-- ============================== -->
-	<!-- 🚀 관리자용 댓글 관리 쿼리 추가 -->
-	<!-- ============================== -->
-	<sql id="adminCommentSearch">
-	    <if test="keyword != null and keyword != ''">
-	        AND (C.CMNT_CONTENT LIKE CONCAT('%', #{keyword}, '%')
-	             OR M.MBR_NICKNAME LIKE CONCAT('%', #{keyword}, '%')
-	             OR CM.COMM_TITLE LIKE CONCAT('%', #{keyword}, '%'))
-	    </if>
-	</sql>
-	
-	<select id="findAdminCommentListPaged" resultType="sst.community.comment.dto.AdminCommentResponseDto">
-	    SELECT 
-	        C.CMNT_NO AS cmntNo, C.CMNT_COMM_NO AS commNo, CM.COMM_TITLE AS commTitle,
-	        C.CMNT_MBR_ID AS cmntMbrId, M.MBR_NICKNAME AS nickname,
-	        C.CMNT_CONTENT AS cmntContent, DATE_FORMAT(C.CMNT_REG_DATE, '%Y-%m-%d %H:%i') AS cmntRegDate, 
-	        C.CMNT_USE_YN AS cmntUseYn
-	    FROM COMMENT C
-	    JOIN MEMBER M ON C.CMNT_MBR_ID = M.MBR_ID
-	    JOIN COMMUNITY CM ON C.CMNT_COMM_NO = CM.COMM_NO
-	    <where>
-	        <choose>
-	            <when test="useYn == 'N'.toString()"> C.CMNT_USE_YN = 'N' </when>
-	            <when test="useYn == 'ALL'.toString()"> 1=1 </when>
-	            <otherwise> C.CMNT_USE_YN = 'Y' </otherwise>
-	        </choose>
-	        <include refid="adminCommentSearch"/>
-	    </where>
-	    ORDER BY C.CMNT_NO DESC
+<!--  > -->
+    <sql id="adminCommentSearchCondition">
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <when test='searchType == "content"'> AND c.CMNT_CONTENT LIKE CONCAT('%', #{keyword}, '%') </when>
+                <when test='searchType == "writer"'> AND m.MBR_NICKNAME LIKE CONCAT('%', #{keyword}, '%') </when>
+            </choose>
+        </if>
+        <choose>
+            <when test='useYn != null and useYn == "Y"'> AND c.CMNT_USE_YN = 'Y' </when>
+            <when test='useYn != null and useYn == "N"'>
+                AND c.CMNT_USE_YN = 'N'
+                AND (SELECT COUNT(*) FROM REPORT Rpt WHERE Rpt.RPT_CMNT_NO = c.CMNT_NO AND Rpt.RPT_STATUS_CD != 'RST004') &lt; 5
+            </when>
+            <when test='useYn != null and useYn == "B"'>
+                AND c.CMNT_USE_YN = 'N'
+                AND (SELECT COUNT(*) FROM REPORT Rpt WHERE Rpt.RPT_CMNT_NO = c.CMNT_NO AND Rpt.RPT_STATUS_CD != 'RST004') &gt;= 5
+            </when>
+        </choose>
+    </sql>
+
+    <select id="adminFindCommentListPaged" resultType="sst.community.comment.dto.AdminCommentResponseDto">
+	    SELECT
+	        c.CMNT_NO AS cmntNo, 
+	        
+	        <!-- 🚀 수정 1: 기존 c.CMNT_COMM_NO AS cmntCommNo 였던 것을 프론트/DTO 기대값인 commNo로 변경 -->
+	        c.CMNT_COMM_NO AS commNo, 
+	        
+	        <!-- 🚀 추가 1: 관리자가 어떤 게시글인지 알 수 있도록 글 제목 추가 -->
+	        post.COMM_TITLE AS commTitle, 
+	        
+	        c.CMNT_MBR_ID AS cmntMbrId, 
+	        c.CMNT_CONTENT AS cmntContent, 
+	        DATE_FORMAT(c.CMNT_REG_DATE, '%Y-%m-%d %H:%i') AS cmntRegDate, 
+	        c.CMNT_USE_YN AS cmntUseYn, 
+	        m.MBR_NICKNAME AS nickname
+	    FROM COMMENT c
+	    JOIN MEMBER m ON c.CMNT_MBR_ID = m.MBR_ID
+	    
+	    <!-- 🚀 추가 2: 커뮤니티(게시글) 테이블 조인 추가 -->
+	    JOIN COMMUNITY post ON c.CMNT_COMM_NO = post.COMM_NO 
+	    
+	    WHERE 1=1
+	    <include refid="adminCommentSearchCondition"/>
+	    ORDER BY c.CMNT_NO DESC
 	    LIMIT #{offset}, #{size}
 	</select>
-	
-	<select id="countAdminCommentList" resultType="int">
-	    SELECT COUNT(*)
-	    FROM COMMENT C
-	    JOIN MEMBER M ON C.CMNT_MBR_ID = M.MBR_ID
-	    JOIN COMMUNITY CM ON C.CMNT_COMM_NO = CM.COMM_NO
-	    <where>
-	        <choose>
-	            <when test="useYn == 'N'.toString()"> C.CMNT_USE_YN = 'N' </when>
-	            <when test="useYn == 'ALL'.toString()"> 1=1 </when>
-	            <otherwise> C.CMNT_USE_YN = 'Y' </otherwise>
-	        </choose>
-	        <include refid="adminCommentSearch"/>
-	    </where>
-	</select>
-	
+
+    <select id="adminCountCommentList" resultType="int">
+        SELECT COUNT(*)
+        FROM COMMENT c
+        JOIN MEMBER m ON c.CMNT_MBR_ID = m.MBR_ID
+        WHERE 1=1
+        <include refid="adminCommentSearchCondition"/>
+    </select>
+
+    <update id="adminUpdateCommentUseYn">
+        UPDATE COMMENT 
+        SET CMNT_USE_YN = #{useYn}, 
+            CMNT_UP_DATE = NOW() 
+        WHERE CMNT_NO = #{cmtNo}
+    </update>
+
+
 	<update id="updateCommentUseYn">
 	    UPDATE COMMENT SET CMNT_USE_YN = #{useYn}, CMNT_UP_DATE = NOW() WHERE CMNT_NO = #{cmntNo}
 	</update>
@@ -168,9 +184,5 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             END
         WHERE COMM_NO = #{commNo}
     </update>
-    
-   <!-- 댓글 수 감소 -->
-   <!-- 댓글 수 감소 -->
-   <!-- 댓글 수 감소 -->
-   
+
 </mapper>
