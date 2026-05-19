@@ -36,10 +36,12 @@ public class Member {
     // 프로필 파일 정보를 객체로 포함 / 빌더나 생성 시점에 기본적으로 빈 객체를 넣어줌
     private FileDomain mbrProfileIcon = new FileDomain();
     
-    // [예비] 배경 파일 정보도 나중에 이렇게 추가하면 됩니다.
+    // 배경 파일 정보도 나중에 이렇게 추가하면 됩니다.
     @Builder.Default
     private FileDomain mbrProfileBg = new FileDomain();
     
+    // 회원 탈퇴나 정지 때의 사유
+    private String suspendReason;
 }
 
 
