@@ -1,4 +1,3 @@
-// 🚀 2. SearchService.java
 package sst.search.service;
 
 import lombok.RequiredArgsConstructor;
@@ -18,22 +17,19 @@ public class SearchService {
     private final SearchMapper searchMapper;
 
     @Transactional(readOnly = true)
-    public PageResponse<Community> searchCommunitiesPaged(String keyword, PageRequest pageRequest) {
-        // 🚀 해시태그 검색 시 '#'을 붙이고 검색하는 유저를 위해 '#' 제거 처리
+    public PageResponse<Community> searchCommunitiesPaged(String keyword, String region, PageRequest pageRequest) {
         String cleanKeyword = (keyword == null) ? "" : keyword.replace("#", "").trim();
-
-        int total = searchMapper.countCommunitiesByKeyword(cleanKeyword);
+        int total = searchMapper.countCommunitiesByKeyword(cleanKeyword, region);
         List<Community> list = searchMapper.selectCommunitiesByKeywordPaged(
-                cleanKeyword, pageRequest.getOffset(), pageRequest.getSize());
-
+                cleanKeyword, region, pageRequest.getOffset(), pageRequest.getSize());
         return new PageResponse<>(list, total, pageRequest);
     }
-    
+
     @Transactional(readOnly = true)
-    public PageResponse<PlaceCardDto> searchPlacesPaged(String keyword, String category, PageRequest pageRequest) {
+    public PageResponse<PlaceCardDto> searchPlacesPaged(String keyword, String category, String region, PageRequest pageRequest) {
         String cleanKeyword = (keyword == null) ? "" : keyword.trim();
-        int total = searchMapper.countPlacesByKeyword(cleanKeyword, category);
-        List<PlaceCardDto> list = searchMapper.selectPlacesByKeywordPaged(cleanKeyword, category, pageRequest.getOffset(), pageRequest.getSize());
+        int total = searchMapper.countPlacesByKeyword(cleanKeyword, category, region);
+        List<PlaceCardDto> list = searchMapper.selectPlacesByKeywordPaged(cleanKeyword, category, region, pageRequest.getOffset(), pageRequest.getSize());
         return new PageResponse<>(list, total, pageRequest);
     }
 }
