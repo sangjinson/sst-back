@@ -3,6 +3,8 @@ package sst.community.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import sst.community.domain.Community;
@@ -18,8 +20,6 @@ import sst.global.files.domain.FileDomain;
 import sst.global.files.dto.FileUploadResult;
 import sst.global.files.mapper.FileMapper;
 import sst.global.files.storage.FileStorage;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
