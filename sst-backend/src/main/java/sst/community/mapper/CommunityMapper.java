@@ -11,7 +11,6 @@ import sst.community.dto.PlaceCategoryDto;
 import sst.community.dto.PlaceDto;
 import sst.community.dto.RegionDto;
 import sst.community.dto.CommunityDto;
-import sst.community.dto.CommunityFileDto;
 
 @Mapper
 public interface CommunityMapper {
@@ -95,9 +94,6 @@ public interface CommunityMapper {
 
     // 게시글 해시태그 전체 삭제
     void deleteCommunityHashtags(Long commNo);
-
-    // 파일 정보 등록
-    void insertFile(CommunityFileDto file);
 
     // 커뮤니티 파일 매핑 등록
     void insertCommunityFileMap(CommunityFileMapDto map);

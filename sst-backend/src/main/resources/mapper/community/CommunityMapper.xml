@@ -370,35 +370,6 @@
 	    WHERE CHTG_COMM_NO = #{commNo}
 	</delete>
 	
-	<!-- 파일 정보 등록 -->
-	<insert id="insertFile" parameterType="sst.community.dto.CommunityFileDto"
-	        useGeneratedKeys="true"
-	        keyProperty="fileNo"
-	        keyColumn="FILE_NO">
-	    INSERT INTO FILE (
-	        FILE_ORG_NM,
-	        FILE_SAVE_NM,
-	        FILE_PATH,
-	        FILE_EXT,
-	        FILE_SIZE,
-	        FILE_MIME_TYPE,
-	        FILE_TYPE,
-	        FILE_REG_DATE,
-	        FILE_USE_YN
-	    )
-	    VALUES (
-	        #{fileOrgNm},
-	        #{fileSaveNm},
-	        #{filePath},
-	        #{fileExt},
-	        #{fileSize},
-	        #{fileMimeType},
-	        #{fileType},
-	        NOW(),
-	        'Y'
-	    )
-	</insert>
-	
 	<!-- 인기 해시태그 TOP5 조회 -->
 	<select id="selectPopularHashtags" resultType="string">
 	    SELECT
