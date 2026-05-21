@@ -32,7 +32,7 @@ public class CommunityController {
 
     // 사용자가 선택한 카테고리에 맞는 게시판 목록 조회
     @GetMapping("/api/community")
-    public PageResponse<Community> communityList(
+    public PageResponse<Community> getCommunityList(
             @RequestParam("catCd") String catCd,
             PageRequest pageRequest
     ) {
@@ -49,7 +49,7 @@ public class CommunityController {
     
     // 커뮤니티 게시글 상세 조회
     @GetMapping("/api/community/{commNo}")
-    public Community communityDetail(@PathVariable("commNo") Long commNo) {
+    public Community getCommunityDetail(@PathVariable("commNo") Long commNo) {
         return communityService.getCommunityDetail(commNo);
     }
     
@@ -87,8 +87,8 @@ public class CommunityController {
     
     // 커뮤니티 게시글 삭제
     @DeleteMapping("/api/community/{commNo}")
-    public void removeCommunity(@PathVariable("commNo") Long commNo) {
-        communityService.removeCommunity(commNo);
+    public void deleteCommunity(@PathVariable("commNo") Long commNo) {
+        communityService.deleteCommunity(commNo);
     }
     
     // 커뮤니티 게시글 좋아요 처리

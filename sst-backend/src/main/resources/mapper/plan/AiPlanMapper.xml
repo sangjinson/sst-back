@@ -108,7 +108,7 @@
             #{mbrId},
             #{scheduleName},
             #{startDate, jdbcType=DATE},
-            #{endDate, jdbcType=DATE},XB
+            #{endDate, jdbcType=DATE},
             #{totalDays},
             #{rgnNo},
             #{theme1},

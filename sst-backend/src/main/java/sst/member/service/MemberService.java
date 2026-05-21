@@ -86,7 +86,7 @@ public class MemberService {
 	            	// 저장된 파일
 	                FileUploadResult saved = context.getSavedFiles().get(0);
 	                // 삭제된 파일
-	                FileUploadResult removed = context.getDeletedFiles().get(0);
+	                List<FileUploadResult> removed = context.getDeletedFiles();
 	                
 	                
 	                FileDomain fileDomain = FileDomain.builder()
@@ -119,7 +119,7 @@ public class MemberService {
 	                    .subPath("profile/bg")
 	                    .allow(List.of("jpg", "jpeg", "png", "webp"))
 	                    .maxSize("10MB")
-	                    .replaceFile(request.getBackgroundImage(), oldProfilePath);
+	                    .updateFile(request.getBackgroundImage(), oldProfilePath);
 
 	            // [Step 2] 성공 시 조건문 처리
 	            if (results != null && !results.isEmpty()) {

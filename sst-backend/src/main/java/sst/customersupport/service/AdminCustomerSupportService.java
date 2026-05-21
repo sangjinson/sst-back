@@ -8,17 +8,17 @@ public interface AdminCustomerSupportService {
     int createNotice(CustomerSupport customerSupport);
 
     // 공지사항 수정
-    int modifyNotice(CustomerSupport customerSupport);
+    int updateNotice(CustomerSupport customerSupport);
 
     // 공지사항 삭제
-    int removeNotice(Long csNo);
+    int deleteNotice(Long csNo);
 
     // FAQ 작성
     int createFaq(CustomerSupport customerSupport);
 
     // FAQ 수정
-    int modifyFaq(CustomerSupport customerSupport);
+    int updateFaq(CustomerSupport customerSupport);
 
     // FAQ 삭제
-    int removeFaq(Long csNo);
+    int deleteFaq(Long csNo);
 }
