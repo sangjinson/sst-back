@@ -257,6 +257,7 @@
 	        COMM_TITLE = #{commTitle},
 	        COMM_CONTENT = #{commContent},
 	        COMM_MAIN_IMG_URL = #{commMainImgUrl},
+	        COMM_AIS_NO = #{commAisNo},
 	        COMM_PLC_NO = #{commPlcNo},
 	        COMM_UP_DATE = NOW()
 	    WHERE COMM_NO = #{commNo}
