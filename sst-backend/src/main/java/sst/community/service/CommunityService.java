@@ -291,7 +291,7 @@ public class CommunityService {
                 .updateFileAll(files, deleteImageUrls);
     }
     
-    public void removeCommunity(Long commNo) {
+    public void deleteCommunity(Long commNo) {
 
         // 실제 파일 삭제용 이미지 경로 조회
         List<String> imagePaths =

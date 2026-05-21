@@ -39,7 +39,7 @@ public class AdminCommunityService {
     }
 
     @Transactional
-    public void modifyCommunityByAdmin(Community community) {
+    public void updateCommunityByAdmin(Community community) {
         // 매퍼 호출 시 타입을 Community(Domain)로 정확히 전달합니다.
         int result = communityMapper.updateCommunityByAdmin(community);
         if (result == 0) {

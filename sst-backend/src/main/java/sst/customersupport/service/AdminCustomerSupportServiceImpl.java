@@ -18,12 +18,12 @@ public class AdminCustomerSupportServiceImpl implements AdminCustomerSupportServ
     }
 
     @Override
-    public int modifyNotice(CustomerSupport customerSupport) {
+    public int updateNotice(CustomerSupport customerSupport) {
         return customerSupportMapper.updateNotice(customerSupport);
     }
 
     @Override
-    public int removeNotice(Long csNo) {
+    public int deleteNotice(Long csNo) {
         return customerSupportMapper.deleteNotice(csNo);
     }
 
@@ -33,12 +33,12 @@ public class AdminCustomerSupportServiceImpl implements AdminCustomerSupportServ
     }
 
     @Override
-    public int modifyFaq(CustomerSupport customerSupport) {
+    public int updateFaq(CustomerSupport customerSupport) {
         return customerSupportMapper.updateFaq(customerSupport);
     }
 
     @Override
-    public int removeFaq(Long csNo) {
+    public int deleteFaq(Long csNo) {
         return customerSupportMapper.deleteFaq(csNo);
     }
 }
