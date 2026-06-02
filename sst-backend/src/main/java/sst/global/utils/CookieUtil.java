@@ -22,7 +22,7 @@ public class CookieUtil {
 
     // Access Token 만료 시간: 30분
     private static final int ACCESS_TOKEN_MAX_AGE = 1800;
-
+    
     // Refresh Token 만료 시간: 1일
     private static final int REFRESH_TOKEN_MAX_AGE = 86400;
 

@@ -96,8 +96,8 @@ public class AuthService {
 			                .mbrNickname(member.getMbrNickname())
 			                .memberRole(member.getMbrAuthCd()) 
 			                .mbrProviderCd(member.getMbrProviderCd())
-			                //.mbrProfileIcon(member.getMbrProfileIcon())
-			                //.mbrProfileBg(member.getMbrProfileBg())
+			                .mbrProfileIcon(member.getMbrProfileIcon())
+			                .mbrProfileBg(member.getMbrProfileBg())
 			                .build();
     }
 	
@@ -107,12 +107,20 @@ public class AuthService {
      * @param response 새 Access Token 쿠키를 추가할 응답
      */
     public void refresh(HttpServletRequest request, HttpServletResponse response) {
+    	
+    	/**
+    	 * 회원 접속인지 확인 
+    	 * 비회원이라면 accessToken이 존재하지 않음.
+    	 */
+    	String accessToken = cookieUtil.extractCookie(request, CookieUtil.ACCESS_TOKEN_COOKIE);
+    	if (accessToken == null) { return; }
 
         // 쿠키에서 Refresh Token 추출
         String refreshToken = cookieUtil.extractCookie(request, CookieUtil.REFRESH_TOKEN_COOKIE);
-        if (refreshToken == null) {
-        	throw new CustomException(ErrorCode.UNAUTHORIZED);
-        }
+        
+        
+        
+        if (refreshToken == null) { throw new CustomException(ErrorCode.UNAUTHORIZED); }
 
         // JWT 파싱으로 이메일 추출 (만료 시 ExpiredTokenException 발생)
         String email = jwtTokenProvider.getEmail(refreshToken);
@@ -158,7 +166,7 @@ public class AuthService {
      * @return LoginResponse (사용자 정보)
      */
     @Transactional
-    public LoginResponse verifyAndRefresh(HttpServletRequest request, HttpServletResponse response) {
+	public LoginResponse verifyAndRefresh(HttpServletRequest request, HttpServletResponse response) {
         // 1. 쿠키에서 Refresh Token 추출
         String refreshToken = cookieUtil.extractCookie(request, CookieUtil.REFRESH_TOKEN_COOKIE);
         if (refreshToken == null) {

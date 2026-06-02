@@ -86,6 +86,36 @@ public class AuthController {
      */
 	@GetMapping("/me")
     public ResponseEntity<ApiResponse<LoginResponse>> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		
+		
+		// 비회원 사용자일 경우 빈 회원 정보를 반환.
+		if(userDetails == null) {
+			return ResponseEntity.ok(ApiResponse.success(LoginResponse.builder().build()));
+		}
+		
+		// 회원일때의 처리
+        // 🚀 SecurityContext에 저장된 유저 정보를 꺼내어 프론트엔드에 필요한 데이터만 응답
+        Member member = userDetails.getMember();
+        LoginResponse response = LoginResponse.builder()
+							        		  .mbrId(member.getMbrId())
+							                  .mbrEmail(member.getMbrEmail())
+							                  .mbrName(member.getMbrName())
+							                  .mbrNickname(member.getMbrNickname())
+							                  .memberRole(member.getMbrAuthCd()) 
+							                  .mbrProviderCd(member.getMbrProviderCd())
+							                  .mbrProfileIcon(member.getMbrProfileIcon()) 
+							                  .mbrProfileBg(member.getMbrProfileBg())
+		                                      .build();
+                
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+	
+	/**
+     * 회원 전용 기반
+     * HTTP Method를 GET으로 수정하고, 응답 본문에 사용자 정보를 담아 반환
+     */
+	@GetMapping("/member")
+    public ResponseEntity<ApiResponse<LoginResponse>> member(@AuthenticationPrincipal CustomUserDetails userDetails) {
         // 🚀 SecurityContext에 저장된 유저 정보를 꺼내어 프론트엔드에 필요한 데이터만 응답
         Member member = userDetails.getMember();
         
@@ -102,6 +132,8 @@ public class AuthController {
                 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+	
+	
 	
 	/**
      * 닉네임 중복 확인
